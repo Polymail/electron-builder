@@ -187,6 +187,16 @@ function signApplicationAsync (opts) {
         args.push('--options', [...new Set(optionsArguments)].join(','))
       }
 
+      /**
+       * Sort the child paths by how deep they are in the file tree.  Some arcane apple
+       * logic expects the deeper files to be signed first otherwise strange errors get
+       * thrown our way
+       */
+      childPaths = childPaths.sort((a, b) => {
+        const aDepth = a.split(path.sep).length
+        const bDepth = b.split(path.sep).length
+        return bDepth - aDepth
+      })
       if (opts.entitlements) {
         // Sign with entitlements
         for (const filePath of childPaths) {
